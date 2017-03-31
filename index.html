@@ -22,7 +22,7 @@ var github = "https://api.github.com/repos/wawajohn/wawajohn.github.io/contents"
 $.getJSON( github, function( data ) {
   var items = [];
   $.each( data, function( key, val ) {
-	var imgurl = "http://img.wawajohn.net/"+ val["path"]
+	var imgurl = "/"+ val["path"]
 	var regexp_patt = /\.(png|bmp|jpg|jpeg|gif)$/i;
 	var regexp_result = regexp_patt.test(imgurl);
 	if (regexp_result) {
