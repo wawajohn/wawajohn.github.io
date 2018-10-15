@@ -1,58 +1,115 @@
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>GitHub Image File List</title>
-  <style>
+<meta charset="utf-8" />
+<title>GitHub Image File List</title>
+<style>
+body {font-family: arial}
+
+#commitslist {width: 18%; position: fixed;}
+#imageslist {width: 80%; position: relative; left: 20%;}
   img {
-    max-height: 200px;
-	float: left;
+	max-width: 14%;
 	border: 5px solid #eee;
 	margin: 3px;
 	padding: 3px;
   }
-  </style>
-  <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+ol {margin: 0; overflow: auto; height: 600px; padding: 0;}
+li {line-height: 2em; margin-left: 2.5em; border: 0px solid red}
+#commitslist a {display: block;}
+#commitslist a:hover {background-color: #5caceb; color: #fff}
+
+.selected {background-color: #5caceb; color: #fff}
+
+</style>
+  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+<script>
+// Basic settings.
+var
+	githubusername = "wawajohn",
+	// https://github.com/settings/tokens
+	githubtoken = "16d268094006499925afadf8efc44f125d775f36",
+	urlbase = "https://img.wawajohn.net/";
+
+// Auto settings.
+var
+	githubcommiturl = "https://api.github.com/repos/"+ githubusername +"/"+ githubusername +".github.io/commits";
+	
+$.ajaxSetup({
+	//type: "GET",
+	headers: {
+		"Authorization":"token "+ githubtoken +""
+	}
+});
+
+// Get all commits.
+$.getJSON(githubcommiturl, function(commitsdata) {
+
+	$.each(commitsdata, function(index, commitinfodata) {
+		var
+			commitsha = commitinfodata['sha'],
+			commitdate = commitinfodata['commit']['author']['date'],
+			commiturl = commitinfodata['url'];
+			
+		$('<li class="gg" id="li'+ commitsha +'"><a class="gg" href="#div'+ commitsha +'">'+ commitdate +'</a></li>').appendTo("#commitslist ol");
+		$( '<div id="div'+ commitsha +'"><h3>'+ commitdate +' ('+ commitsha + ')</h3></div>' ).appendTo("#imageslist");
+		
+		// Get single commit.
+		$.getJSON(commiturl).done(function(imagesdata) {
+		
+			if (imagesdata.files.length == 0) {
+				$('#li'+ commitsha +'').remove();
+				$('#div'+ commitsha +'').remove();
+			}
+			
+			if (imagesdata.files.length > 0) {
+				var imgcounts = 0;
+				$.each(imagesdata.files, function(index, filenames) {
+					var
+						filename = filenames['filename'],
+						sha = filenames['sha'],
+						regexp_patt = /\.(png|bmp|jpg|jpeg|gif|svg)$/i,
+						regexp_result = regexp_patt.test(filename);
+				
+					if (regexp_result) {
+						$( '<a href="'+ urlbase + filename +'"><img title="'+ urlbase + filename +'" src="'+ urlbase + filename + '" /></a>' ).appendTo('#div'+ commitsha +'');
+						imgcounts++;
+					}
+				})
+				
+					if (imgcounts == 0) {
+						$('#li'+ commitsha +'').remove();
+						$('#div'+ commitsha +'').remove();
+					}
+			}
+			
+		});
+	})
+
+});
+/*
+$( document ).ready(function() {
+	$( ".gg" ).click(function() {
+		//$("#imageslist").html("");
+		//var sha = $(this).attr("href");
+		//$(this).addClass("selected");
+		//$(sha).addClass("selected");
+		//getimages(sha);
+		console.log("id:"+ $(this).attr("id"));
+		console.log("href:"+ $(this).attr("href"));
+		console.log("id:"+ $(this).children().attr("id"));
+		console.log("href:"+ $(this).children().attr("href"));
+	});
+});
+*/
+
+</script>
+
 </head>
 <body>
- <script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '660492304097201',
-      xfbml      : true,
-      version    : 'v2.8'
-    });
-    FB.AppEvents.logPageView();
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
-
- 
-<script>
-var github = "https://api.github.com/repos/wawajohn/wawajohn.github.io/contents";
-$.getJSON( github, function( data ) {
-  var items = [];
-  $.each( data, function( key, val ) {
-	var imgurl = "/"+ val["path"]
-	var regexp_patt = /\.(png|bmp|jpg|jpeg|gif)$/i;
-	var regexp_result = regexp_patt.test(imgurl);
-	if (regexp_result) {
-		items.unshift( '<a href="'+ imgurl +'"><img title="'+ imgurl +'" src="'+ imgurl + '" /></a>' );
-	}
-  });
- 
-  $( "<p>", {
-    "class": "my-new-list",
-    html: items.join( "" )
-  }).appendTo( "body" );
-});
-</script>
- 
+<div id="commitslist"><ol></ol></div>
+<div id="imageslist"></div>
 </body>
 </html>
