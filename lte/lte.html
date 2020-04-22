@@ -1,0 +1,146 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Let's Talk in English</title>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/hot-sneaks/jquery-ui.css" />
+
+  <!-- hls.js -->
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <!-- Or if you want a more recent canary version -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
+
+
+
+ 
+
+</head>
+
+<body>
+<h3 id="datetitle"></h3>
+<video id="video" controls preload="auto"></video>
+
+<div id="rightside">
+  <p>
+    <input type="radio" name="lno" value="https://vod.streamingfast.net" id="l1" onclick="playvideo()" checked /><label for="l1">Line 1</label>
+    <input type="radio" name="lno" value="https://d4licq9vet44p.cloudfront.net" id="l2" onclick="playvideo()"/><label for="l2">Line 2</label>
+    <input type="radio" name="ptime" value="1600" id="t1600" onclick="playvideo()" /><label for="t1600">1600</label>
+    <input type="radio" name="ptime" value="1700" id="t1700" onclick="playvideo()" checked /><label for="t1700">1700</label>
+  </p>
+  <p>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].play()">Play</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].pause()">Pause</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].requestFullscreen()">Full Screen</button>
+  </p>
+  <p>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].volume=0">Slient</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].volume-=0.1">-</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].volume+=0.1">+</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].volume=1">Full</button>
+  </p>
+
+  <p>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].currentTime-=10">- 10 s</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].currentTime-=5">- 5 s</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].currentTime+=10">+ 5 s</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].currentTime+=10">+ 10 s</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].currentTime+=120">Skip AD</button>
+    <input type="text" id='seek_pos' size="8" onkeydown="if(window.event.keyCode=='13'){$('#video')[0].currentTime=$('#seek_pos').val();}" value="1710">
+    <button type="button" class="btn btn-sm btn-info" onclick="$('#video')[0].currentTime=$('#seek_pos').val()">Seek to </button>
+  </p>
+
+  <div id="datepicker"></div>
+</div>
+
+
+<script src="./hls_config.js"></script>
+<script>
+  
+  var gdebug = true;
+  
+  var video = document.getElementById('video');
+  var hls = new Hls(hls_config);
+
+  $( "#datepicker" ).datepicker({
+    minDate: -7,
+    maxDate: 0,
+    dateFormat: "yymmdd",
+    showOtherMonths: true,
+    selectOtherMonths: true,
+    }).datepicker('setDate', -1);
+
+    //var current_day = $( "#datepicker" ).datepicker().val();
+    //var current_line = $( "input[name=lno]:checked" ).val();
+    //$( "#datetitle" ).text( current_day );
+
+
+    function playvideo() {
+      current_day = $( "#datepicker" ).datepicker().val();
+      current_line = $( "input[name=lno]:checked" ).val();
+      target_time = $( "input[name=ptime]:checked" ).val()
+      video_url = getvideourl( current_line, current_day, target_time );
+      $( "#datetitle" ).text( current_day );
+      
+      //hls.detachMedia(video);
+      hls.loadSource( video_url );
+      hls.attachMedia(video);
+
+      //hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+        hls.on(Hls.Events.MANIFEST_PARSED,function() {
+          if (gdebug) {
+            console.log( "loaded video url:"+ video_url )
+            };
+          //video.play();
+          hls.startLoad();
+        });
+    };
+
+$( "#datepicker" ).change( function() {
+  playvideo();
+});
+
+    function getvideourl(videoline, videodate, videotime) {
+      var videourl = videoline +'/hls-vod/dvr/Ch1.'+ videodate +'_'+ videotime +'_1200k.mp4.m3u8';
+      return videourl;
+    }
+/*
+    if(gdebug) {
+      console.log("default url:"+ getvideourl(current_line, current_day) )
+    };
+*/
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<div>Current Time : <span  id="currentTime">0</span></div>
+</body>
+</html>
