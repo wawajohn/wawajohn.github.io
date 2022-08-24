@@ -17,7 +17,11 @@
 
  
 <script>
-var github = "https://api.github.com/repos/wawajohn/wawajohn.github.io/contents";
+  var repo_owner = "wawajohn";
+  var repo_name = "wawajohn.github.io";
+  var repo_branch = "git-pages"; // Default: master
+  var github_api = "https://api.github.com/repos/"+ repo_owner +"/"+ repo_name +"/"+ repo_branch +"/contents";
+  
 $.getJSON( github, function( data ) {
   $.each( data, function( key, val ) {
 	var imgurl = "/"+ val["path"]
