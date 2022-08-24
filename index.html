@@ -5,10 +5,10 @@
   <style>
   img {
     max-height: 200px;
-	float: left;
-	border: 5px solid #eee;
-	margin: 3px;
-	padding: 3px;
+    float: left;
+    border: 5px solid #eee;
+    margin: 3px;
+    padding: 3px;
   }
   </style>
   <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
@@ -24,12 +24,13 @@
 
 $.getJSON( github_api, function( data ) {
   $.each( data, function( key, val ) {
-	var imgurl = "/"+ val["path"]
-	var regexp_patt = /\.(png|bmp|jpg|jpeg|gif|svg)$/i;
-	var regexp_result = regexp_patt.test(imgurl);
-	if (regexp_result) {
-		$( '<a href="'+ imgurl +'"><img title="'+ imgurl +'" src="'+ imgurl + '" /></a>' ).appendTo("body");
-	}
+    var imgurl = "/"+ val["path"]
+    var regexp_patt = /\.(png|bmp|jpg|jpeg|gif|svg)$/i;
+    var regexp_result = regexp_patt.test(imgurl);
+    
+    if (regexp_result) {
+      $( '<a href="'+ imgurl +'"><img title="'+ imgurl +'" src="'+ imgurl + '" /></a>' ).appendTo("body");
+    }
   });
 });
 </script>
