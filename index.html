@@ -20,7 +20,7 @@
   var repo_owner = "wawajohn";
   var repo_name = "wawajohn.github.io";
   var repo_branch = "git-pages"; // Default: master
-  var github_api = "https://api.github.com/repos/"+ repo_owner +"/"+ repo_name +"/"+ repo_branch +"/contents";
+  var github_api = "https://api.github.com/repos/"+ repo_owner +"/"+ repo_name +"/contents?"+ repo_branch;
 
 $.getJSON( github_api, function( data ) {
   $.each( data, function( key, val ) {
