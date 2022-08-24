@@ -21,8 +21,8 @@
   var repo_name = "wawajohn.github.io";
   var repo_branch = "git-pages"; // Default: master
   var github_api = "https://api.github.com/repos/"+ repo_owner +"/"+ repo_name +"/"+ repo_branch +"/contents";
-  
-$.getJSON( github, function( data ) {
+
+$.getJSON( github_api, function( data ) {
   $.each( data, function( key, val ) {
 	var imgurl = "/"+ val["path"]
 	var regexp_patt = /\.(png|bmp|jpg|jpeg|gif|svg)$/i;
